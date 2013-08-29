@@ -17,7 +17,7 @@ CLI for endic, krdic
 
 사용법은 아주간단한데, `dic` 명령어를 사용하시면됩니다.
 
-    $ dic.py en 단어
+    $ dic en 단어
     word, vocabulary
 
 현재는 `dic.script` 내부에 있는 `options`에 있는 설정으로 
