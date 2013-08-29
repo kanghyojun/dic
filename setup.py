@@ -1,6 +1,7 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#! /usr/bin/env python
 from setuptools import setup, find_packages
+
 from dic import __version__
 
 
@@ -11,5 +12,4 @@ setup(name='dic.py',
       author='Kang Hyojun',
       author_email='hyojun@admire.kr',
       install_requires=requirements,
-      packages=find_packages(),
-      scripts=['dic.py'])
+      packages=find_packages())

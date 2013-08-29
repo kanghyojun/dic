@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from sys import argv
-from dictionary import get_dictionary
-
-__version__ = (0, 0, 1)
+from dic.dictionary import get_dictionary
 
 options = {
     'lang': {'en': 'naver.ko.to.en'},
