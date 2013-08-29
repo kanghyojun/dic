@@ -25,7 +25,7 @@ def setup_translator(translators):
 
     return translator_env
 
-def main(argv):
+def main():
     if len(argv) < 3:
         print 'wrong number arguments'
         print '$ python dic.py [lang] [word]'
@@ -37,6 +37,3 @@ def main(argv):
         trans = translators[options['lang'][argv[1]]]
         trans.word = argv[2].decode('utf-8')
         print trans.word
-
-if __name__ == '__main__':
-    main(argv)

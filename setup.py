@@ -12,4 +12,7 @@ setup(name='dic.py',
       author='Kang Hyojun',
       author_email='hyojun@admire.kr',
       install_requires=requirements,
-      packages=find_packages())
+      packages=find_packages(),
+      entry_points={
+          'console_scripts': ['dic = dic.script:main']
+      })
