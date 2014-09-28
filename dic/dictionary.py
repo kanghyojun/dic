@@ -30,11 +30,12 @@ class Dictionary(object):
     def __str__(self):
         return 'translate: %s --> %s' % (self._origin, self._translated)
 
+
 def get_dictionary(**options):
     def f(self):
         r = requests.get(self.url.format(self._origin))
         result = ''
-        if (r.status_code == 200 and 
+        if (r.status_code == 200 and
                r.headers['content-type'].startswith('text/html')):
             html = lxml.html.fromstring(r.text)
             finds = []
@@ -49,8 +50,8 @@ def get_dictionary(**options):
             results = [f.text_content().strip() for f in finds]
             result = ', '.join(results)
         else:
-            print 'status: {0} returned in url={1}'.format(r.status_code,
-                                                           self.url)
+            print('status: {0} returned in url={1}'.format(r.status_code,
+                                                           self.url))
         return result
 
     MetaTranslator = type('Dictionary', (), dict(Dictionary.__dict__))
