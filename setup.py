@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 import ast
 
 
-requirements = ['pytest==2.3.5', 'requests==1.2.3', 'lxml==3.2.3']
+requirements = ['pytest>=2.3.5', 'requests==1.2.3', 'lxml==3.2.3']
 
 def get_version(filename):
     with open(filename) as f:

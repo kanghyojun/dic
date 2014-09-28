@@ -6,29 +6,20 @@ __all__ = 'Dictionary', 'get_dictionary'
 
 class Dictionary(object):
 
+    _origin = ''
+    _translate = ''
+
     def __init__(self, name, url):
         self.url = url
         self.name = name
-        self._origin = ''
-        self._translated = ''
 
     def get_meaning_from_url(self):
-        raise Exception('`get_meaning_from_url` MUST implemented.')
+        raise NotImplementedError('`get_meaning_from_url` MUST implemented.')
 
-    @property
-    def word(self):
-        return self._translated
-
-    @word.setter
-    def word(self, w):
-        self._origin = w
-        self._translated = self.get_meaning_from_url()
-
-    def __repr__(self):
-        return 'Dictionary(%s -> %s)' % (self._origin, self._translated)
-
-    def __str__(self):
-        return 'translate: %s --> %s' % (self._origin, self._translated)
+    def translate(self, word):
+        self._origin = word
+        self._translate = self.get_meaning_from_url()
+        return self.get_meaning_from_url()
 
 
 def get_dictionary(**options):

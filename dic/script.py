@@ -1,42 +1,60 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from sys import argv
-from dic.dictionary import get_dictionary
+from configparser import ConfigParser
 
-options = {
-    'lang': {'en': 'naver.ko.to.en'},
-    'translators': [
-        {
-            'name': 'naver.ko.to.en',
-            'url': u'http://endic.naver.com/search.nhn?query={0}',
-            'path': [
-                '//dt[contains(@class, \'mean_on\')]//em//span[@class=\'EQUIV\']',
-                '//dd//span[contains(@class, \'fnt_k05\')]//span[@class=\'EQUIV\']'
-            ]
-        }
-    ]
-}
+import argparse
+import os
+
+from dictionary import get_dictionary
+
+
+__version__ = (0, 0, 1)
+
+def validate_config(config):
+    assert 'language' in config, '[language] section MUST require.'
+    assert 'support' in config['language']
+    langs = [x.strip() for x in config['language']['support'].split(',')]
+    if not langs:
+        raise AssertionError('language.support MUST not empty.')
+    for lang in langs:
+        assert lang in config.sections(), \
+               '[{}] section MUST require.'.format(lang)
+        assert 'name' in config[lang]
+        assert 'url' in config[lang]
+        assert 'path' in config[lang]
+
+
+def read_option(filename):
+    config = ConfigParser()
+    config.read(os.path.abspath(filename))
+    validate_config(config)
+    return config
+
 
 def setup_translator(translators):
     translator_env = {}
     for t in translators:
         inst = get_dictionary(**t)
         translator_env[inst.name] = inst
-
     return translator_env
 
-def main():
-    if len(argv) < 3:
-        print('wrong number arguments')
-        print('$ python dic.py [lang] [word]')
-        return
 
-    translators = setup_translator(options['translators'])
+def main(lang, word, configfile):
+    options = read_option(configfile)
+    assert lang in options['language']['support'], \
+            'language MUST be one of {}'.format(options['language']['support'])
+    translator = get_dictionary(**options[lang])
+    print(translator.translate(word))
 
-    if argv[1] in options['lang'] and options['lang'][argv[1]] in translators:
-        trans = translators[options['lang'][argv[1]]]
-        trans.word = argv[2].decode('utf-8')
-        print(trans.word)
 
-if __name__ == '__main__':
-    main(argv)
+parser = argparse.ArgumentParser(description='Command line dictionary.')
+parser.add_argument('language', metavar='LANG',
+                    help='Choose dictionary to translate word. '
+                         'following options are available.', type=str)
+parser.add_argument('word', metavar='WORD',
+                    help='Type the word to be translated.', type=str)
+parser.add_argument('--config', '-c', help='config file', dest='configfile',
+                    default='conf.ini')
+args = parser.parse_args()
+main(args.language, args.word, args.configfile)
