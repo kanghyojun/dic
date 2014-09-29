@@ -19,12 +19,12 @@ def get_version(filename):
     raise Exception('__version__ not found in {}'.format(filename))
 
 
-setup(name='dic.py',
-      version=get_version('dic.py'),
+setup(name='dic',
+      version=get_version('dic/__init__.py'),
       author='Kang Hyojun',
       author_email='hyojun@admire.kr',
       install_requires=requirements,
       packages=find_packages(),
       entry_points={
-          'console_scripts': ['dic = dic.script:main']
+          'console_scripts': 'dic = dic.script:main'
       })

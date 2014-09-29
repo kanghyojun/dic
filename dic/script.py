@@ -6,7 +6,7 @@ from configparser import ConfigParser
 import argparse
 import os
 
-from dictionary import get_dictionary
+from .dictionary import get_dictionary
 
 
 __version__ = (0, 0, 1)
@@ -27,7 +27,7 @@ def validate_config(config):
 
 def read_option(filename):
     config = ConfigParser()
-    config.read(os.path.abspath(filename))
+    config.read(filename)
     validate_config(config)
     return config
 
@@ -40,7 +40,7 @@ def setup_translator(translators):
     return translator_env
 
 
-def main(lang, word, configfile):
+def translate(lang, word, configfile):
     options = read_option(configfile)
     assert lang in options['language']['support'], \
             'language MUST be one of {}'.format(options['language']['support'])
@@ -48,13 +48,18 @@ def main(lang, word, configfile):
     print(translator.translate(word))
 
 
-parser = argparse.ArgumentParser(description='Command line dictionary.')
-parser.add_argument('language', metavar='LANG',
-                    help='Choose dictionary to translate word. '
-                         'following options are available.', type=str)
-parser.add_argument('word', metavar='WORD',
-                    help='Type the word to be translated.', type=str)
-parser.add_argument('--config', '-c', help='config file', dest='configfile',
-                    default='conf.ini')
-args = parser.parse_args()
-main(args.language, args.word, args.configfile)
+def main():
+    parser = argparse.ArgumentParser(description='Command line dictionary.')
+    parser.add_argument('language', metavar='LANG',
+                        help='Choose dictionary to translate word. '
+                             'following options are available.', type=str)
+    parser.add_argument('word', metavar='WORD',
+                        help='Type the word to be translated.', type=str)
+    k = 'DIC_CONFIGURATION_FILE'
+    this_config = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               '../conf.ini')
+    default_config = os.environ[k] if k in os.environ else this_config
+    parser.add_argument('--config', '-c', help='config file', dest='configfile',
+                        default=default_config)
+    args = parser.parse_args()
+    translate(args.language, args.word, args.configfile)
