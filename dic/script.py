@@ -9,8 +9,6 @@ import os
 from .dictionary import get_dictionary
 
 
-__version__ = (0, 0, 1)
-
 def validate_config(config):
     assert 'language' in config, '[language] section MUST require.'
     assert 'support' in config['language']
@@ -45,7 +43,7 @@ def translate(lang, word, configfile):
     assert lang in options['language']['support'], \
             'language MUST be one of {}'.format(options['language']['support'])
     translator = get_dictionary(**options[lang])
-    print(translator.translate(word))
+    return translator.translate(word)
 
 
 def main():
@@ -62,4 +60,5 @@ def main():
     parser.add_argument('--config', '-c', help='config file', dest='configfile',
                         default=default_config)
     args = parser.parse_args()
-    translate(args.language, args.word, args.configfile)
+    t = translate(args.language, args.word, args.configfile)
+    print(t)
