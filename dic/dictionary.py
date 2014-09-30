@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-import requests
+from urllib.request import urlopen
+from urllib.parse import quote
+
 import lxml.html
 
 __all__ = 'Dictionary', 'get_dictionary'
@@ -24,28 +26,26 @@ class Dictionary(object):
 
 def get_dictionary(**options):
     def f(self):
-        r = requests.get(self.url.format(self._origin))
+        url = self.url.format(quote(self._origin))
+        with urlopen(url) as f:
+            r = f.read()
         result = ''
-        if (r.status_code == 200 and
-               r.headers['content-type'].startswith('text/html')):
-            html = lxml.html.fromstring(r.text)
-            finds = []
-            if isinstance(options['path'], basestring):
-                finds = html.xpath(options['path'])
-            elif isinstance(options['path'], list):
-                for p in options['path']:
-                    finds = html.xpath(p)
-                    if len(finds):
-                        break
-
-            results = [f.text_content().strip() for f in finds]
-            result = ', '.join(results)
-        else:
-            print('status: {0} returned in url={1}'.format(r.status_code,
-                                                           self.url))
+        if not r:
+            raise Exception("document didn't respond, url: {}".format(url))
+        html = lxml.html.fromstring(r)
+        finds = []
+        paths = options['path'].split('||')
+        if not paths:
+            raise Exception(
+                "Path didn't set properly : {}".format(options['path']))
+        for p in paths:
+            finds = html.xpath(p.strip())
+            if len(finds):
+                break
+        results = [f.text_content().strip() for f in finds]
+        result = ', '.join(results)
         return result
 
     MetaTranslator = type('Dictionary', (), dict(Dictionary.__dict__))
     setattr(MetaTranslator, 'get_meaning_from_url', f)
-
     return MetaTranslator(options['name'], options['url'])
